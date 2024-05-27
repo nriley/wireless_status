@@ -32,6 +32,18 @@ extension CWChannelWidth: CustomStringConvertible {
     }
 }
 
+extension CWInterfaceMode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .none: return "No Network"
+        case .station: return "Station"
+        case .IBSS: return "IBSS Mode"
+        case .hostAP: return "Personal Hotspot"
+        @unknown default: return "<unknown>"
+        }
+    }
+}
+
 func rssiRating(_ rssi: Int) -> (String, String) {
     switch rssi {
     case -30 ..< 0: return ("Amazing", "forestgreen")
@@ -48,6 +60,18 @@ func printWLANInfo() {
     let client = CWWiFiClient.shared()
 
     guard let interface = client.interface() else {
+        print("Wi-Fi not found")
+        return
+    }
+
+    guard interface.powerOn() else {
+        print("Wi-Fi off")
+        return
+    }
+
+    let interfaceMode = interface.interfaceMode()
+    guard interfaceMode == CWInterfaceMode.station else {
+        print(interfaceMode)
         return
     }
 
